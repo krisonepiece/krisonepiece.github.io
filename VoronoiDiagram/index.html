@@ -1,0 +1,558 @@
+﻿<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <style type="text/css">
+        h1 {
+            text-align: center;
+        }
+        #result img {
+            width: 500px;
+        }
+        #result th , #result, 
+        #file th:nth-child(2), #file td:nth-child(2),
+        #link th:nth-child(2), #link td:nth-child(2){
+            text-align: center;
+        }
+        #design img {
+            width: 250px;
+        }
+    </style>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Voronoi Diagram</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="css/scrolling-nav.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<!-- The #page-top ID is part of the scrolling feature - the data-spy and data-target are part of the built-in Bootstrap scrollspy function -->
+
+<body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand page-scroll" href="#page-top">Voronoi Diagram</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse navbar-ex1-collapse">
+                <ul class="nav navbar-nav">
+                    <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
+                    <li class="hidden">
+                        <a class="page-scroll" href="#page-top"></a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#spec">軟體規格書</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#desc">軟體說明</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#design">程式設計</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#test">軟體測試與實驗結果</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#conclusion">結論與心得</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#appendix">附錄</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- 首頁 -->
+    <section id="intro" class="intro-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <img src="pic/voronoi.png" />
+                    <h1>Voronoi Diagram</h1>
+                    <h3>資工碩一 蘇王奕翔 M053040018</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 軟體規格書 -->
+    <section id="spec" class="spec-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1>軟體規格書</h1>                    
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">輸出與輸入（資料）規格</h3>
+                        </div>
+                        <div class="panel-body">
+                            <h4><strong>輸入</strong></h4>
+                            <ol>
+                                <li>滑鼠在畫布上任意點擊，畫布大小為603*603</li>
+                                <li>輸入x軸及y軸座標</li>
+                                <li>隨機產生數個點</li>
+                                <li>讀入「輸入文字檔」，<a href="file/vd_testdata.in">《詳細格式》</a></li>
+                                <li>讀入「輸出文字檔」，直接在畫布繪出圖形</li>
+                            </ol>
+                            <h4><strong>輸出</strong></h4>
+                            <ol>
+                                <li>按下Save，輸出「輸出文字檔」</li>
+                                <li>輸出文字檔格式如下：<br/>
+                                    輸入的座標點：P x y&nbsp;&nbsp;&nbsp;// 每個點佔一行，兩整數 x, y 為座標。<br />
+                                    線段：E x1 y1 x2 y2&nbsp;&nbsp;&nbsp;// (x1, y1) 為起點，(x2, y2) 為終點，其中 x1≦x2 或 x1=x2, y1≦y2<br />
+                                    座標點排列在前半段，線段排列在後半段。<br />
+                                    座標點以 lexical order順序排列（即先排序第一維座標，若相同，則再排序第二維座標；線段亦以lexical order順序排列。</li>
+                                <li>
+                                    輸出文字檔案範例：
+                                    <div class="panel panel-default">
+                                        <div class="panel-body">
+                                            P 100 100<br />
+                                            P 100 200<br />
+                                            P 200 100<br />
+                                            P 200 200<br />
+                                            E 0 150 150 150<br />
+                                            E 150 0 150 150<br />
+                                            E 150 150 150 600<br />
+                                            E 150 150 600 150<br />
+                                        </div>
+                                    </div>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">功能規格與介面規格</h3>
+                        </div>
+                        <div class="panel-body">
+                            <h4><strong>主介面</strong></h4>
+                            <img src="pic/Form.jpg" />
+                            <h4><strong>功能</strong></h4>
+                            <ul>
+                                <li><img src="pic/Add-48.png" width="25" />(Clear)：清除畫布</li>
+                                <li><img src="pic/Open-48.png" width="25" />(Open)：開啟檔案</li>
+                                <li><img src="pic/Save-48.png" width="25" />(Save)：輸出檔案</li>
+                                <li><img src="pic/Arrow-48.png" width="25" />(Next)：讀取下一筆資料</li>
+                                <li><img src="pic/Right-48.png" width="25" />(Run)：執行</li>
+                                <li><img src="pic/Forward-48.png" width="25" />(Step)：Step By Step</li>
+                                <li><img src="pic/Plus-48.png" width="25" />(Add)：加入指定座標點</li>
+                                <li><img src="pic/Dice-48.png" width="25" />(Random)：產生隨機點</li>
+                                <li><img src="pic/Help-48.png" width="25" />(About)：關於</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">軟體測試規劃書</h3>
+                        </div>
+                        <div class="panel-body">
+                            以「隨機+共線」的情況，來測試以下幾種點個數的範圍：
+                            <ul>
+                                <li>1～3 點：三點以下直接解</li>
+                                <li>4～6 點：三點以上會 Divide 及 Merge 一次</li>
+                                <li>7～12 點：七點以上會 Divide 及 Merge 多次 </li>
+                                <li>大於 12 點：多點測試</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 軟體說明 -->
+    <section id="desc" class="desc-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1>軟體說明</h1>
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">安裝說明</h3>
+                        </div>
+                        <div class="panel-body">                            
+                            <ol>
+                                <li>下載主程式後，執行「VoronoiDiagram.exe」即可<img src="pic/Icon.jpg" width="80"/></li>
+                            </ol>
+                        </div>
+                    </div>
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">使用說明</h3>
+                        </div>
+                        <div class="panel-body">
+                            <h4><strong>繪製點座標</strong></h4>
+                            於畫布區繪製點座標，有以下幾種方法：
+                            <ul>
+                                <li>點擊滑鼠左鍵於畫布區域</li>
+                                <li>開啟測資檔案</li>
+                                <li>於上方工具列輸入x軸及y軸座標，並點選「Add」按鈕</li>
+                                <li>於上方工具列輸入欲產生隨機點的個數，並點選「Random」按鈕</li>
+                            </ul>
+                            <img src="pic/paint.jpg" />
+                            <h4><strong>繪製 Voronoi Diagram</strong></h4>
+                            <ul>
+                                <li>按下「Run」按鈕，繪製最終結果</li>                                
+                                <li>按下「Step」按鈕，一步一步繪製結果</li>
+                            </ul>  
+                            <img src="pic/Run.jpg" />
+                            <img src="pic/Step.jpg" />
+                            <h4><strong>輸出結果</strong></h4>
+                            <p>按下「Save」將結果輸出至文字檔</p>
+                            <img src="pic/Save.jpg" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 程式設計 -->
+    <section id="design" class="design-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1>程式設計</h1>
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">資料結構</h3>
+                        </div>
+                        <div class="panel-body">
+                            我是使用C#原本就有的PointF型態來儲存點座標，自己額外再建了以下三種結構：
+                            <ol>
+                                <li>
+                                    Edge：儲存線段的結構
+<pre>
+PointF A;   // 線端點A座標
+PointF B;   // 線端點B座標
+PointF a;   // 做中垂線的點a座標
+PointF b;   // 做中垂線的點b座標
+</pre>
+                                </li>
+                                <li>
+                                    Voronoi：儲存Voronoi Diagram的結構
+<pre>
+List&lt;PointF&gt; pList;   // 座標點集合
+List&lt;Edge&gt; hpList;    // Hyper Plane 集合
+List&lt;Edge&gt; vList;     // Voronoi 集合
+</pre>
+                                </li>
+                                <li>
+                                    Record：儲存紀錄的結構，用於Step By Step功能
+<pre>
+List&lt;PointF&gt; pList;   // 點集合
+List&lt;Edge&gt; eList;     // 線段集合
+int type;             // 類型
+bool clear;           // 是否需要清除之前的步驟
+bool enable;          // 是否顯示
+</pre>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">三點以下</h3>                            
+                        </div>
+                        <div class="panel-body">
+                            <h4><strong>三角形解法</strong></h4>
+                            <p>C#的畫線函數中，必須輸入兩點座標，才能輸出一線段，一開始在考慮三個點所有可能的組合，不是圍成三角形就是三點共線，而三角形又分直角三角形、鈍角三角形和銳角三角形，一開始想到的做法是用外心及每邊的中點，由兩點得到斜率，進而推出直線方程式，最後再求直線碰到畫布邊界的交點，外心與畫布邊界交點的連線即為所求線段。但此種作法會遇到幾個問題：</p>
+                            <ol>
+                                <li>若是以外心到每邊中點的方向連線，在頓角三角形中，會有一邊產生例外。</li>
+                                <li>直角三角形的外心會落在最長邊的中點上，意思就是只求得出一點，無法以計算斜率來求得直線方程式。</li>
+                            </ol>
+                            <p>當時在這裡卡了很久，因為只要有一邊求不出除了外心的另一點，就無法畫出線段。</p>
+                            <img src="pic/3-1.png" />
+                            <img src="pic/3-2.png" />
+                            <img src="pic/3-3.png" />
+                            <h4><strong>向量解法</strong></h4>
+                            <p>後來突然想到高中所學到的「法向量」這個詞，但由於記憶久遠，於是就上網找了很多高中數學來看，整理出可以把三角形的每條邊當作向量來看，那帶公式求出法向量後，就可以由邊的中點加上法向量，求得中垂線上的另一點，就有辦法畫出線了。但另一個問題，畫線的方向還沒解決，但當時想說「向量」顧名思義就是有方向性，點A-點B 與 點B-點A 代表的就是兩個相反的方向，那麼算出來的法向量，也就必然會有兩種方向，於是就試著找出每種三角形求出法向量後的共同點，發現只要一開始在計算三角形的各邊向量時，都以逆時針方向來計算，所求得的法向量就會往三角形外射出，而且不管任何三角形都一樣！那麼很明顯的，要求出逆時針方向的向量，一開始的三個點座標就必須經過排序，而且是依照逆時針來排序點。</p>
+                            <p>但其實在這之前完全沒想過點也有逆時針和順時針排序的問題，所以後來又上網查了高中數學，很不巧的看到「右手定則」這個詞，突然想到這好像跟順時針和逆時針有關係，仔細閱讀下發現，可以用兩向量的外積來求得其旋轉的方向，以右手來說，四指為逆時針方向時，大拇指往上指，代表外積為正，相對的若為順時針，外積則為負。所以後來就以三角形的重心為基準點，來求出個點的方向作排序，不過這邊要特別注意，因為程式的座標軸系統，與平常用的不太一樣，所以其實是適用「左手定則」，外積為負才是逆時針旋轉。</p>
+                            <img src="pic/3-4.png" />
+                            <h4><strong>無窮遠邊</strong></h4>
+                            <p>所以，有了外心以外的另一點後，便可計算直線方程式，再帶入畫布邊界的四種 Case：(0, ?), (?, 0), (?, y_max), (x_max, ?) 求出的 x 或 y 若在 0 ~ max 之間，代表與該邊界有交點，就能畫出Voronoi的線段了。</p>
+                            <p>後來在同學的提醒下，發現評分規則有寫到要允許輸出的邊能超出畫布邊界，當時一直沒辦法理解這句話是甚麼意思，後來才想到三點的 Voronoi Diagram 的邊是向外無窮延伸的，其實我在前面用中點加法向量求得另一點時，就可以先將法向量乘以數倍，再加到中點，即求得也是在中垂線上無窮遠的一點座標，就不用再解方程式來求交點那麼麻煩了，於是最後就改成後面這種方法，來畫出三個點的Voronoi Diagram。</p>
+                            <h4><strong>外心</strong></h4>
+                            <p>後來在輸入各種測資的時候，發現帶外心公式有時候還是會算不出來，不過這很明顯就是斜率的問題，所以就想到解聯立還可以用克拉馬公式來解，並且也不會有分母無窮大或為零的問題。</p>
+                            <h4><strong>兩點</strong></h4>
+                            <p>寫到這裡就大概想得出兩點該如何做了，就是將中點分別加上正和負的數倍法向量，即可求出中垂線上兩點座標。</p>
+                            <h4><strong>三點共線</strong></h4>
+                            <p>而三點共線的情況，我是用三點座標求三角形面積必為零的式子來判斷，把各點排序過後，其畫線的做法其實就與兩點畫線是一樣的。</p>
+                        </div>
+                    </div>
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">多點</h3>
+                        </div>
+                        <div class="panel-body">
+                            <p>在寫多點的Case前，雖然看得懂投影片中求 Voronoi Diagram 的演算法，但要轉換成程式實在沒有一點頭緒，於是就先整理整個流程，並寫寫看虛擬碼來釐清思緒：</p>
+                            <h4><strong>演算法</strong></h4>
+                            <ol>
+                                <li>切割：將座標點排序後，把所有座標點分割成左右兩半</li>
+                                <li>求 Voronoi Diagram：將左右兩部分，分別求出Voronoi Diagram</li>
+                                <li>求上下切線：求出全部點的Convex Hull，找出橫跨左右兩部分的邊，即為上下切線</li>
+                                <li>求 Hyper Plane：由一切線做中垂當進入點，撞到VD則轉彎，轉彎的方向如圖所示，最後由另一切線離開</li>
+                                <li>消線：看HP往哪個方向轉，就往哪個方向的VD消掉</li>
+                            </ol>
+                            <h4><strong>虛擬碼</strong></h4>
+<pre>
+edgeList Voronoi(PointList)
+{
+	If(PointList.Count == 1)
+		return;
+	else if(PointList.Count == 2)
+		result = Voronoi_two(PointList);
+	else if(PointList.Count == 3)
+		result = Voronoi_three(PointList);
+	else if(PointList.Count > 3)
+    {
+	    Divide(PointList, Point_Left, Point_Right);
+	    vl = Voronoi(Point_Left);
+	    vr = Voronoi(Point_Right);
+	    result = Merge(vl, vr);
+    }
+    return result;
+}
+</pre>
+                            <p>寫完後發現對整個流程有比較清楚，如果之前三個點以下的Case有寫好，就可以直接拿來用，於是就開始著手第一個Divide的功能。</p>
+                            <h4><strong>Divide</strong></h4>
+                            <p>其實就先將座標點先依X軸再依Y軸排序後，再將索引小於座標點總數除以2的點，分配到Point_Left，其餘分配到Point_Right就完成了。</p>
+                            <p>之後分別對左右兩部分的點求Voronoi Diagram，進入遞迴的部分，最後一步就是將左右兩半部的圖Merge起來。</p>
+                            <h4><strong>Merge</strong></h4>
+                            <p>第一步要做的就是找出上切線及下切線，作為下一步找Hyper Plane 的進入點及離開點。而切線的找法就是畫出整個的Convex Hull，然後逐一掃瞄Convex Hull上鄰近的兩個點，當兩個點分別屬於左右半部的點，該線段即為我們要找的切線。找Convex Hull 的演算法，我是參考<a href="http://www.csie.ntnu.edu.tw/~u91029/ConvexHull.html">演算法筆記</a>的Jarvis' March演算法去做修改，因為在有共線的情況下，共線上的點並不屬於Convex Hull的點，但這樣最後找出來的上下切線就會有誤，所以就必須修改Convex Hull的演算法，想辦法讓共線上的點也能一併加入。Jarvis' March演算法是先從凸包上一點開始做起，然後掃描每個點，找旋轉角度最大或是共線時距離最遠的點，作為下個要連接的點。那要共線時中間的點也要連接，第一個想法就是把共線時找最遠的點改成找最近的點，但如果是一列漸遠的點，這樣搜尋時找最近點時，就有可能會往回找，所以第二個想法就是要標記走過的點。但還有一種情況是當所有的點都是共線時，必須讓Convex Hull再原路折回來，才能找到對的切線，所以走訪過所有點後，如果判定全部點共線，就清空走訪的紀錄，往回搜尋，但我在這邊使用偷懶的作法，只要判定全部共線，就直接複製一份已經找出的Convex Hull點，倒著加入Convex Hull，然後起始點不加即可得到相同結果。</p>
+                            <img src="pic/4-1.png" />
+                            <h4><strong>Hyper Plane</strong></h4>
+                            <p>可以想成Hyper Plane是由很多線段的中垂線連接而成，那第一條Hyper Plane其實就是一切線的中垂線，將中垂線由圖形外的無窮遠處往圖形方向畫，撞到Voronoi Diagram就要轉彎，「撞到」的意思就是判斷兩線段有沒有交點，可以參考演算法筆記的做法，「轉彎」就是必須找下一個線段的中垂線，那麼就可以想像成有一條掃描線，掃描線一開始等於切線，撞到Voronoi Diagram後就要移動掃描線，那麼要如何移動掃描線？我是依照投影片的做法，一次只會移動掃描線段的其中一點，而移動的點就是每次撞到的Voronoi Diagram所平分的兩點。因為在作三點Case時還沒考慮到這個，所以就去Edge的資料結構新增這兩點的資訊，並在求Voronoi Diagram時順便加入這兩點資訊，其實比我想像中的還快，沒有動到太多原本寫的程式。能移動掃描線後，就直接從上一條Hyper Plane的轉彎點繼續畫，再去尋找下個撞到的Voronoi Diagram，這種接著畫Hyper Plane做法，最後就不用再另外消Hyper Plane，我是覺得比較方便也比較直覺。最後Hyper Plane就會由另一切線離開圖形。</p>
+                            <img src="pic/4-2.png" />
+                            <img src="pic/4-3.png" />
+                            <img src="pic/4-4.png" />
+                            <img src="pic/4-5.png" />
+                            <h4><strong>消線</strong></h4>
+                            <p>我是以Hyper Plane撞到Voronoi Diagram後，轉彎的方向來判斷，以轉彎前的線段(<span style="text-decoration:overline;">H1H2</span>)和轉彎後的線段(<span style="text-decoration:overline;">H1H3</span>)求外積，若為逆時針旋轉，則將該方向的Voronoi Diagram線消掉(<span style="text-decoration:overline;">H1H2</span>與<span style="text-decoration:overline;">H1P</span>作外積也為逆時針)，消掉的意思就是將該側線段的座標，更新為轉彎的那點座標，即可達到消線的目的。在求Hyper Plane時就可以先將有撞到的線段記錄下來，在消線時就可以只掃描這幾條線段即可。</p>
+                            <img src="pic/4-5.png" />
+                            <img src="pic/4-6.png" />
+                            <img src="pic/4-7.png" />
+                            <img src="pic/4-8.png" />
+                            <p>以上作法應該就可以解決所有四個點的Case，但如果針對多點，由這個網站前面的範例就可以看到，左右半部超出Hyper Plane的線段不僅限於一條無限延伸的線，有可能左半部Voronoi Diagram的交點位於右半部，如此每次要消的線段就不只一條，還要繼續搜尋消掉的線有沒有延伸下去的線段，有的話就都要刪除，但後來因為時間關係，加上還沒想出把所有延伸線段都刪除的方法，我只能消掉原本就要消的線，和他延伸的第一條線，所以在多點時的某些Case還是可以很明顯地看到有沒消掉的線，是比較可惜的地方。</p>
+                            <h4><strong>特殊情況</strong></h4>
+                            <p>另外還有些比較難發現，也不一定會遇到的問題，就是「誤差」問題。如果座標是用浮點數去存，只要經過除法或乘法運算，小數點就有可能產生誤差，即使妳的浮點數存的看起來像整數（Ex: 120.00, 25.00…），所以在經過求兩線段的交點公式後，就有機率產生誤差，造成有時候求出兩線段的交點，但該交點卻不在兩線段上。若以我上面的作法來解四個點的Case，會遇到誤差的地方只有四個點圍成正方形的時候，我目前遇到誤差的解法都是再想其他方法，盡量避免出現「計算出來的點和另一點是否重疊」，或是「計算出來的點是否在某線段上」等判斷，網路上大部分的做法就是去允許誤差，但允許誤差的範圍就很重要，如果範圍太大，那原本輸入的點座標若有兩個很靠近的點，程式就會視為同一點，造成結果不如預期。</p>
+                        </div>
+                    </div>    
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Step By Step</h3>
+                        </div>
+                        <div class="panel-body">
+                            <p>我Step By Step的作法是有點像PhotoShop圖層的概念，一層一層疊上去，也可以把特定的步驟隱藏起來。我使用自定義的Record結構，當程式執行到有需要畫出來的圖形的步驟，就將該圖形存入Record List中，最後在一步一步印出即可。但在某些時候就必須清除之前步驟的圖形，畫面才不會全都重疊再一起而顯得雜亂，像是左右兩個Convex Hull 合併為一個的時候，就要刪除左右兩個小的Convex Hull，以及消線時要把原本左右兩半部的Voronoi Diagram清掉，才看得出消線的結果，所以每次按下Step By Step所要印出的圖形，就可以整理出以下規律：</p>
+                            <table id="step" class="table table-bordered">
+                                <tr>
+                                    <th>合併</th>
+                                    <th>步驟</th>
+                                    <th>類型</th>
+                                    <th>其他</th>
+                                </tr>
+                                <tr><td rowspan="8">I</td><td>①</td><td>Voronoi (左)</td></tr>
+                                <tr><td>②</td><td>Voronoi (右)</td></tr>
+                                <tr><td>③</td><td>Convex Hull(左)</td></tr>
+                                <tr><td>④</td><td>Convex Hull(右)</td></tr>
+                                <tr><td>⑤</td><td>Convex Hull(合併)</td><td>隱藏③ ④</td></tr>
+                                <tr><td>⑥</td><td>Hyper Plane</td></tr>
+                                <tr><td>⑦</td><td>Voronoi (消線後)左)</td><td>隱藏① ② ⑤</td></tr>
+                                <tr><td>⑧</td><td>Merge (合併HP和VD的結果)</td><td>隱藏⑥ ⑦，成為II的①</td></tr>
+                                <tr><td rowspan="7">II</td><td>②</td><td>Voronoi (右)</td></tr>
+                                <tr><td>③</td><td>Convex Hull(左)</td></tr>
+                                <tr><td>④</td><td>Convex Hull(右)</td></tr>
+                                <tr><td>⑤</td><td>Convex Hull(合併)</td><td>隱藏③ ④</td></tr>
+                                <tr><td>⑥</td><td>Hyper Plane</td></tr>
+                                <tr><td>⑦</td><td>Voronoi (消線後)左)</td><td>隱藏① ② ⑤</td></tr>
+                                <tr><td>⑧</td><td>Merge (合併HP和VD的結果)</td><td>隱藏⑥ ⑦</td></tr>
+                            </table>
+                            <p>若點集合總共切成兩部分，即為8個Step；若切為三個部分，則做完前八個Step產生的Merge圖形，將視為與第三部分合併的Voronoi(左)，即為8+7個Step；若切成四個部分，則第一部分與第二部份會先合併，第三和第四也會先合併，最後再全部合併，也就是8+8+6個Step。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 軟體測試與實驗結果 -->
+    <section id="test" class="test-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1>軟體測試與實驗結果</h1>
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">執行環境</h3>
+                        </div>
+                        <div class="panel-body">
+                            <ul>
+                                <li>程式語言：C#</li>
+                                <li>作業系統：Windows 10</li>
+                                <li>編輯器：Visual Studio 2015</li>
+                            </ul>
+                            <img src="pic/System.jpg" />
+                            <img src="pic/VS.jpg" width="1100" />
+                        </div>
+                    </div>
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">實驗結果</h3>
+                        </div>
+                        <div class="panel-body">
+                            <p>經過測試結果發現，6 點以下皆能通過測試，7 點以上某些Case有機率產生沒消掉的線，判斷應該為浮點數誤差及消掉延伸線的部份尚未完成的關係，才會導致錯誤的結果。本次實驗最多執行到 35 點。(測試輸入輸出檔詳見<a class="page-scroll" href="#appendix">附錄</a>)</p>
+                            <div class="table-responsive">
+                                <table id="result" class="table table-bordered">
+                                    <tr><th colspan="2">3點以下</th></tr>
+                                    <tr><td><img src="pic/2-1.jpg" /></td><td><img src="pic/3-1.jpg" /></td></tr>
+                                    <tr><td><img src="pic/3-2.jpg" /></td><td><img src="pic/3-3.jpg" /></td></tr>
+                                    <tr><th colspan="2">4～6點</th></tr>
+                                    <tr><td><img src="pic/4-1.jpg" /></td><td><img src="pic/6-1.jpg" /></td></tr>
+                                    <tr><td><img src="pic/6-2.jpg" /></td><td><img src="pic/6-3.jpg" /></td></tr>
+                                    <tr><th colspan="2">7～12點</th></tr>
+                                    <tr><td><img src="pic/12-1.jpg" /></td><td><img src="pic/12-2.jpg" /></td></tr>
+                                    <tr><th colspan="2">13點以上</th></tr>
+                                    <tr><td><img src="pic/20-1.jpg" /></td><td><img src="pic/30-1.jpg" /></td></tr>
+                                    <tr><td><img src="pic/32-1.jpg" /></td><td><img src="pic/35-1.jpg" /></td></tr>
+                                </table>
+                            </div>                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 結論與心得 -->
+    <section id="conclusion" class="conclusion-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1>結論與心得</h1>
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">語言選擇</h3>
+                        </div>
+                        <div class="panel-body">
+                            <p>由於本次作業對撰寫的程式語言沒有限制，反而一開始就讓我陷入選擇語言的難題。有人說Python處理圖形比較強，程式碼又簡潔，全部寫完不到1000行。而我們Lab的學長姐都是用Javascript，會想說遇到問題才有人可以問，但之前寫過一點Javascript，覺得要Debug相當麻煩。而我因為大四實習的關係有接觸到一些C#，覺得使用Visual Studio來建立圖形化介面非常方便，考量到時間因素，最後就決定放棄完全沒用過的Python，採用比較熟的C#來做開發。</p>
+                        </div>
+                    </div>
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">前置作業</h3>
+                        </div>
+                        <div class="panel-body">
+                            <p>在開始寫這份作業之前，就大概知道這次的架構比以往的複雜，而且又分期中和期末繳交，如果一開始就有把資料結構設計好，即使之後程式增加越來越多功能，也就不用整個砍掉重練，所以前置作業就顯得更加重要！<br/>在設計資料結構的過程，參考了許多學長所寫的資料結構，但其實很多資訊我都看不太懂為什麼需要儲存，而且每個人設計的差異也蠻大的，當時就一直卡在這不知道如何開始。後來仔細想想，其實就建立圖形所需最基本的元件就可以了，之後要甚麼資訊在新增上去，物件導向的好處就在這！圖形一開始會有「點」，最後輸出由許多中垂「線」組合成的「Voronoi Diagram」，所以就必須有資料結構能夠儲存「點」、「線」、「Voronoi Diagram」。C#內建就有點（PointF）的結構可以用，線（Edge）就是由兩點所組成，而Voronoi Diagram當時想說就是儲存圖形的所有資訊，所以就給他儲存了點和線的集合。</p>
+                        </div>
+                    </div>
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">期中進度</h3>
+                        </div>
+                        <div class="panel-body">
+                            <p>原本列出各種三角形的Case，想依照鈍角、銳角和直角三種情況去解，但因為每種Case的差異性不大，就覺得應該可以找出通用解，所以光在想解法就花了一兩天的時間，後來想到向量的解法後（參見程式設計），實作部分就還蠻順利的。需要注意的應該就是每個會用到的數學計算或是操作，例如求外積、畫點、畫線等，都應該盡量寫成Function的形式，這樣之後要用到就可以直接呼叫，程式碼也會比較簡潔易懂。</p>
+                        </div>
+                    </div>
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">期末進度</h3>
+                        </div>
+                        <div class="panel-body">
+                            <p>在理解講義的演算法後，感覺實作起來應該不難，所以我一開始是打算挑戰多點的Case，但後來詢問一個程式很強的學長後，了解到多點要考慮很多種特殊情況，當時深深覺得自己能力不足，所以只好放棄這個念頭，改成先以畫出四點為目標。但我後來發現在思考的時候，就可以以多點的解法去想四點的例子，問題會變得比較單純，四點的Case都可以正確執行之後，要再改成多點的就比較容易了，雖然在消線及誤差判斷上沒有做得很完美，但最後也算有做出半個多點的Voronoi Diagram程式。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 附錄 -->
+    <section id="appendix" class="appendix-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1>附錄</h1>
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">相關檔案</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table id="file" class="table table-bordered">
+                                    <tr><th>檔案名稱</th><th>下載</th></tr>
+                                    <tr><td>主程式</td><td><a href="file/M053040018_VoronoiDiagram.exe"><span class="glyphicon glyphicon-download" aria-hidden="true"></span></a></td></tr>
+                                    <tr><td>程式原始碼</td><td><a href="file/M053040018_SourceCode.rar"><span class="glyphicon glyphicon-download" aria-hidden="true"></span></a></td></tr>
+                                    <tr><td>測試輸入輸出檔(3點以下)</td><td><a href="file/M053040018_test_p1p3.rar"><span class="glyphicon glyphicon-download" aria-hidden="true"></span></a></td></tr>
+                                    <tr><td>測試輸入輸出檔(4點～6點)</td><td><a href="file/M053040018_test_p4p6.rar"><span class="glyphicon glyphicon-download" aria-hidden="true"></span></a></td></tr>
+                                    <tr><td>測試輸入輸出檔(7點～12點)</td><td><a href="file/M053040018_test_p7p12.rar"><span class="glyphicon glyphicon-download" aria-hidden="true"></span></a></td></tr>
+                                    <tr><td>測試輸入輸出檔(13點以上)</td><td><a href="file/M053040018_test_p13p35.rar"><span class="glyphicon glyphicon-download" aria-hidden="true"></span></a></td></tr>
+                                    <tr><td>測資(vd_testdata.in)</td><td><a href="file/vd_testdata.in"><span class="glyphicon glyphicon-download" aria-hidden="true"></span></a></td></tr>
+                                    <tr><td>測資(共線測試.in)</td><td><a href="file/共線測試.in"><span class="glyphicon glyphicon-download" aria-hidden="true"></span></a></td></tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">相關連結</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table id="link" class="table table-bordered">
+                                    <tr><th>網站名稱</th><th>連結</th></tr>
+                                    <tr><td>演算法筆記-Point</td><td><a href="http://www.csie.ntnu.edu.tw/~u91029/Point.html"><span class="glyphicon glyphicon-link" aria-hidden="true"></span></a></td></tr>
+                                    <tr><td>演算法筆記-Voronoi Diagram</td><td><a href="http://www.csie.ntnu.edu.tw/~u91029/VoronoiDiagram.html"><span class="glyphicon glyphicon-link" aria-hidden="true"></span></a></td></tr>
+                                    <tr><td>演算法筆記-Convex Hull</td><td><a href="http://www.csie.ntnu.edu.tw/~u91029/ConvexHull.html"><span class="glyphicon glyphicon-link" aria-hidden="true"></span></a></td></tr>
+                                    <tr><td>C# Color 對應表</td><td><a href="http://www.flounder.com/csharp_color_table.htm"><span class="glyphicon glyphicon-link" aria-hidden="true"></span></a></td></tr>
+                                    <tr><td>Voronoi Diagram using Divide-and-Conquer</td><td><a href="http://www.personal.kent.edu/~rmuhamma/Compgeometry/MyCG/Voronoi/DivConqVor/divConqVor.htm"><span class="glyphicon glyphicon-link" aria-hidden="true"></span></a></td></tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- jQuery -->
+    <script src="js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+
+    <!-- Scrolling Nav JavaScript -->
+    <script src="js/jquery.easing.min.js"></script>
+    <script src="js/scrolling-nav.js"></script>
+
+</body>
+
+</html>
